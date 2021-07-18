@@ -1,58 +1,40 @@
 const slider = document.querySelector("#slider-price-range");
 const switchSlider = document.querySelector(".switch-slider");
-
-let viewNumber = document.querySelector(".view-number").textContent;
-let monthlyPrice = parseInt(document.querySelector(".monthly-price").textContent.slice(1, 3));
+const pricePerYear = document.querySelector(".pricePerYear");
 
 const trialBtn = document.querySelector(".trial-btn");
 const modal = document.querySelector(".modal-overlay");
 const modalMsg = document.querySelector(".modal-msg");
 const closeIcon = document.querySelector(".close-icon");
 
-function checkSlider() {
-    switch (slider.value) {
-        case "0":
-            viewNumber = "10k";
-            monthlyPrice = 8;
-            break;
-        case "25":
-            viewNumber = "50k";
-            monthlyPrice = 12;
-            break;
-        case "50":
-            viewNumber = "100k";
-            monthlyPrice = 16;
-            break;
-        case "75":
-            viewNumber = "500k";
-            monthlyPrice = 24;
-            break;
-        case "100":
-            viewNumber = "1m";
-            monthlyPrice = 36;
-            break;
-    }
-    switchSlider.checked ? monthlyPrice = monthlyPrice * 0.75 : monthlyPrice = monthlyPrice;
-    document.querySelector(".monthly-price").textContent = `$${monthlyPrice}.00`;
-    document.querySelector(".view-number").textContent = viewNumber;
+const package = { "10k": 8, "50k": 12, "100k": 16, "500k": 24, "1m": 36 };
+
+function packageSelector() {
+  viewNumber = Object.keys(package)[slider.value];
+  monthlyPrice = Object.values(package)[slider.value];
+
+  switchSlider.checked ? (monthlyPrice = monthlyPrice * 0.75) : (monthlyPrice = monthlyPrice);
+  
+  document.querySelector(".view-number").textContent = viewNumber;
+  document.querySelector(".monthly-price").textContent = `$${monthlyPrice.toFixed(2)}`;
+  document.querySelector(".yearly-price").textContent = `$${(monthlyPrice * 12).toFixed(2)}`;
 }
 
-slider.oninput = function () {
-    checkSlider();
-    slider.style.backgroundSize = `${(slider.value - slider.min) * 100 / (slider.max - slider.min)}% 100%`;
-}
+slider.addEventListener("input", function () {
+  packageSelector();
+  slider.style.backgroundSize = `${((slider.value - slider.min) * 100) / (slider.max - slider.min)}% 100%`;
+});
 
-switchSlider.addEventListener("click", function () {
-    checkSlider();
-})
+switchSlider.addEventListener("change", function () {
+  packageSelector();
+  pricePerYear.classList.toggle("toggle-pricePerYear");
+});
 
-trialBtn.addEventListener("click", function(){
-    modal.classList.add("show-modal");
-    modalMsg.innerHTML = `<p class="modal-msg">You have successfully sign up for <span>$${monthlyPrice}.00/month</span> package with <span>${viewNumber}</span> pageviews.</p>`;  
-})
+trialBtn.addEventListener("click", function () {
+  modal.classList.add("show-modal");
+ });
 
-closeIcon.addEventListener("click", function(){
-    modal.classList.remove("show-modal");
-})
-
+closeIcon.addEventListener("click", function () {
+  modal.classList.remove("show-modal");
+});
 
